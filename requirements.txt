@@ -1,0 +1,2 @@
+defopt==2.0.0
+matrix-client==0.0.4
