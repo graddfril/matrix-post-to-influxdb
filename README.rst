@@ -1,4 +1,4 @@
-graddfril/matrix-listen-to-room
-===============================
+graddfril/matrix-post-to-influxdb
+=================================
 
-A trivial wrapper over Matrix.org Python SDK which listens to events in the room and displays them, which is all it does. Useful for debugging.
+A simple wrapper over Matrix.org Python SDK and InfluxDB client which listens to events in the room and posts them, reformatting appropriately, to the InfluxDB server.
