@@ -1,7 +1,10 @@
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 import defopt
 from matrix_client.client import MatrixClient, Room
 from influxdb import InfluxDBClient
+
+
+MatrixConfig = namedtuple('MatrixConfig', ['hs', 'access_token', 'room_id'])
 
 
 def transform_matrix_to_influxdb(matrix_event: dict):
@@ -19,12 +22,12 @@ def transform_matrix_to_influxdb(matrix_event: dict):
     return result
 
 
-def main(access_token: str, room_id: str, influx_dsn: str, hs: str='https://matrix.org'):
+def main(matrix_c: MatrixConfig, influx_dsn: str):
     """Listen for events happening in a Matrix room."""
-    matrix = MatrixClient(hs, token=access_token)
+    matrix = MatrixClient(matrix_c.hs, token=matrix_c.access_token)
     influxdb = InfluxDBClient.from_DSN(influx_dsn)
 
-    my_room = list(filter(lambda x: x[0] == room_id, matrix.get_rooms().items()))[0][1]
+    my_room = list(filter(lambda x: x[0] == matrix_c.room_id, matrix.get_rooms().items()))[0][1]
 
     my_room.add_listener(lambda x: print(x))
     my_room.add_listener(lambda x: influxdb.write_points([transform_matrix_to_influxdb(x)], time_precision='ms'))
@@ -32,5 +35,10 @@ def main(access_token: str, room_id: str, influx_dsn: str, hs: str='https://matr
     matrix.listen_forever()
 
 
+def cli(access_token: str, room_id: str, influx_dsn: str, hs: str='https://matrix.org'):
+    main(MatrixConfig(hs, access_token, room_id),
+         influx_dsn)
+
+
 if __name__ == '__main__':
-    defopt.run(main)
+    defopt.run(cli)
