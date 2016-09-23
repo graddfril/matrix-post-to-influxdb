@@ -28,6 +28,8 @@ def main(matrix_c: MatrixConfig, influx_dsn: str):
     matrix = MatrixClient(matrix_c.hs, token=matrix_c.access_token)
     influxdb = InfluxDBClient.from_DSN(influx_dsn)
 
+    influxdb.create_database(influxdb._database)
+
     my_room = list(filter(lambda x: x[0] == matrix_c.room_id, matrix.get_rooms().items()))[0][1]
 
     my_room.add_listener(lambda x: print(x))
