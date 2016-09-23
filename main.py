@@ -1,3 +1,4 @@
+from os import environ
 from collections import defaultdict, namedtuple
 import defopt
 from matrix_client.client import MatrixClient, Room
@@ -40,5 +41,17 @@ def cli(access_token: str, room_id: str, influx_dsn: str, hs: str='https://matri
          influx_dsn)
 
 
+def from_env():
+    main(MatrixConfig(environ['MATRIX_HOMESERVER'],
+                      environ['MATRIX_ACCESS_TOKEN'],
+                      environ['MATRIX_ROOM_ID']),
+         environ['INFLUXDB_DSN'])
+
+
 if __name__ == '__main__':
-    defopt.run(cli)
+    try:
+        from_env()
+    # some env variable were not defined
+    except KeyError:
+        # fall back to cli
+        defopt.run(cli)
