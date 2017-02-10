@@ -47,7 +47,7 @@ def from_env():
     main(MatrixConfig(environ['MATRIX_HOMESERVER'],
                       environ['MATRIX_ACCESS_TOKEN'],
                       environ['MATRIX_ROOM_ID']),
-         environ['INFLUXDB_DSN'])
+                      environ['INFLUXDB_DSN'])
 
 
 if __name__ == '__main__':
