@@ -5,7 +5,7 @@ from matrix_client.client import MatrixClient, Room
 from influxdb import InfluxDBClient
 
 
-MatrixConfig = namedtuple('MatrixConfig', ['hs', 'access_token', 'room_id'])
+MatrixConfig = namedtuple('MatrixConfig', ['hs', 'user_id', 'access_token', 'room_id'])
 
 
 def transform_matrix_to_influxdb(matrix_event: dict):
@@ -38,13 +38,14 @@ def main(matrix_c: MatrixConfig, influx_dsn: str):
     matrix.listen_forever()
 
 
-def cli(access_token: str, room_id: str, influx_dsn: str, hs: str='https://matrix.org'):
-    main(MatrixConfig(hs, access_token, room_id),
+def cli(user_id: str, access_token: str, room_id: str, influx_dsn: str, hs: str='https://matrix.org'):
+    main(MatrixConfig(hs, user_id, access_token, room_id),
          influx_dsn)
 
 
 def from_env():
     main(MatrixConfig(environ['MATRIX_HOMESERVER'],
+                      environ['MATRIX_USER_ID'],
                       environ['MATRIX_ACCESS_TOKEN'],
                       environ['MATRIX_ROOM_ID']),
                       environ['INFLUXDB_DSN'])
