@@ -30,7 +30,7 @@ def main(matrix_c: MatrixConfig, influx_dsn: str):
 
     influxdb.create_database(influxdb._database)
 
-    my_room = list(filter(lambda x: x[0] == matrix_c.room_id, matrix.get_rooms().items()))[0][1]
+    my_room = matrix.join_room(matrix_c.room_id)
 
     my_room.add_listener(lambda x: print(x))
     my_room.add_listener(lambda x: influxdb.write_points([transform_matrix_to_influxdb(x)], time_precision='ms'))
