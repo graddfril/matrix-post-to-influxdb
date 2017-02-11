@@ -25,15 +25,15 @@ def transform_matrix_to_influxdb(matrix_event: dict):
 
 def main(matrix_c: MatrixConfig, influx_dsn: str):
     """Listen for events happening in a Matrix room."""
-    matrix = MatrixClient(matrix_c.hs, token=matrix_c.access_token)
+    matrix = MatrixClient(matrix_c.hs, user_id=matrix_c.user_id, token=matrix_c.access_token)
     influxdb = InfluxDBClient.from_DSN(influx_dsn)
 
     influxdb.create_database(influxdb._database)
 
     my_room = matrix.join_room(matrix_c.room_id)
 
-    my_room.add_listener(lambda x: print(x))
-    my_room.add_listener(lambda x: influxdb.write_points([transform_matrix_to_influxdb(x)], time_precision='ms'))
+    my_room.add_listener(lambda _,x: print(x))
+    my_room.add_listener(lambda _,x: influxdb.write_points([transform_matrix_to_influxdb(x)], time_precision='ms'))
 
     matrix.listen_forever()
 
